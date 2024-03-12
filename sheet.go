@@ -30,8 +30,8 @@ type Sheet struct {
 	cellStore       CellStore
 	currentRow      *Row
 	cellStoreName   string // The first part of the key used in
-			       // the cellStore.  This name is stable,
-			       // unlike the Name, which can change
+	// the cellStore.  This name is stable,
+	// unlike the Name, which can change
 }
 
 // NewSheet constructs a Sheet with the default CellStore and returns
@@ -47,8 +47,8 @@ func NewSheetWithCellStore(name string, constructor CellStoreConstructor) (*Shee
 		return nil, fmt.Errorf("sheet name is invalid: %w", err)
 	}
 	sheet := &Sheet{
-		Name: name,
-		Cols: &ColStore{},
+		Name:          name,
+		Cols:          &ColStore{},
 		cellStoreName: name,
 	}
 	var err error
@@ -630,6 +630,13 @@ func (s *Sheet) prepWorksheetFromRows(worksheet *xlsxWorksheet, relations *xlsxW
 						DisplayString:  cell.Hyperlink.DisplayString,
 						Tooltip:        cell.Hyperlink.Tooltip}
 					worksheet.Hyperlinks.HyperLinks = append(worksheet.Hyperlinks.HyperLinks, xlsxLink)
+				} else if cell.Hyperlink.Location != "" {
+					xlsxLink := xlsxHyperlink{
+						Location:      cell.Hyperlink.Location,
+						Reference:     cellID,
+						DisplayString: cell.Hyperlink.DisplayString,
+						Tooltip:       cell.Hyperlink.Tooltip}
+					worksheet.Hyperlinks.HyperLinks = append(worksheet.Hyperlinks.HyperLinks, xlsxLink)
 				}
 			}
 
@@ -791,6 +798,13 @@ func (s *Sheet) makeRows(worksheet *xlsxWorksheet, styles *xlsxStyleSheet, refTa
 						DisplayString:  cell.Hyperlink.DisplayString,
 						Tooltip:        cell.Hyperlink.Tooltip}
 					worksheet.Hyperlinks.HyperLinks = append(worksheet.Hyperlinks.HyperLinks, xlsxLink)
+				} else if cell.Hyperlink.Location != "" {
+					xlsxLink := xlsxHyperlink{
+						Location:      cell.Hyperlink.Location,
+						Reference:     xC.R,
+						DisplayString: cell.Hyperlink.DisplayString,
+						Tooltip:       cell.Hyperlink.Tooltip}
+					worksheet.Hyperlinks.HyperLinks = append(worksheet.Hyperlinks.HyperLinks, xlsxLink)
 				}
 			}
 
@@ -944,7 +958,6 @@ func handleNumFmtIdForXLSX(NumFmtId int, styles *xlsxStyleSheet) (XfId int) {
 	XfId = styles.addCellXf(xCellXf)
 	return
 }
-
 
 func IsSaneSheetName(sheetName string) error {
 	runeLength := utf8.RuneCountInString(sheetName)
