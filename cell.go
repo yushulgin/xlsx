@@ -424,7 +424,9 @@ func (c *Cell) SetValue(n interface{}) {
 func (c *Cell) SetNumeric(s string) {
 	c.updatable()
 	c.Value = s
-	c.NumFmt = builtInNumFmt[builtInNumFmtIndex_GENERAL]
+	if strings.TrimSpace(c.NumFmt) == "" {
+		c.NumFmt = builtInNumFmt[builtInNumFmtIndex_GENERAL]
+	}
 	c.formula = ""
 	c.cellType = CellTypeNumeric
 	c.modified = true
